@@ -36,9 +36,10 @@ jobs:
 
       - name: Wait for services to be ready
         run: |
+          set +e  # Disable exit on error for this block
           for i in {1..15}; do
-            STATUS_PRODUCTS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/products)
-            STATUS_ORDERS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/orders)
+            STATUS_PRODUCTS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/products || echo 000)
+            STATUS_ORDERS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/orders || echo 000)
             echo "Attempt $i: /products returned $STATUS_PRODUCTS and /orders returned $STATUS_ORDERS"
             if [ "$STATUS_PRODUCTS" -eq 200 ] && [ "$STATUS_ORDERS" -eq 200 ]; then
               exit 0
@@ -46,6 +47,7 @@ jobs:
             sleep 2
           done
           exit 1
+
 
       - name: Integration Test - Product Service Endpoint
         run: |
