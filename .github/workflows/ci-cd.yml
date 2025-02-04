@@ -37,7 +37,10 @@ jobs:
       - name: Wait for services to be ready
         run: |
           for i in {1..15}; do
-            if curl -s http://localhost:8080/products > /dev/null && curl -s http://localhost:5000/orders > /dev/null; then
+            STATUS_PRODUCTS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/products)
+            STATUS_ORDERS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/orders)
+            echo "Attempt $i: /products returned $STATUS_PRODUCTS and /orders returned $STATUS_ORDERS"
+            if [ "$STATUS_PRODUCTS" -eq 200 ] && [ "$STATUS_ORDERS" -eq 200 ]; then
               exit 0
             fi
             sleep 2

@@ -27,7 +27,7 @@ services:
     build: ./order-service
     container_name: order-service
     ports:
-      - "5001:5000"
+      - "5000:5000"
     environment:
       - POSTGRES_DB=ecommerce
       - POSTGRES_USER=myuser
