@@ -55,9 +55,14 @@ jobs:
 
       - name: Integration Test - Create Order (invalid product)
         run: |
-          curl -f -X POST http://localhost:5000/orders \
+          status=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:5000/orders \
             -H "Content-Type: application/json" \
-            -d '{"product_id": 9999, "quantity": 1}' || true
+            -d '{"product_id": 9999, "quantity": 1}')
+          if [ "$status" -ne 404 ]; then
+            echo "Expected 404, got $status"
+            exit 1
+          fi
+
 
       - name: Run Order Service Unit Tests
         working-directory: order-service
